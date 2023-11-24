@@ -1,13 +1,21 @@
 from typing import List
 from client_interactions import click, get_cord_color
+from data.enums import ItemType
 
 
 class _UsableObject:
     def use(self):
-        if get_cord_color(self.check_open) == self.check_color:
-            click(self.cords, self.double)
+        if self.item:
+            match self.item.type_:
+                case ItemType.Ticket:
+                    pass
+                case ItemType.Openable:
+                    color = get_cord_color(self.item.check_open)
+                    while color != self.item.check_color:
+                        click(self.cords, self.double)
+                        color = get_cord_color(self.item.check_open)
         else:
-            raise Exception("Inventory is not open")
+            click(self.cords, self.double)
 
 class Cords:
     def __init__(self, x:int, y:int):
@@ -22,8 +30,17 @@ class _PanelBtn(_UsableObject):
         self.cords = cords
         self.double = False
 
+        self.item_:Item = None
+
     def __str__(self) -> str:
         return f"{self.cords}"
+
+class Item:
+    def __init__(self, type_:str, check_open:Cords, check_color:(int, int, int)):
+        self.type_ = type_
+        self.check_use = check_open
+        self.check_color = check_color
+
 
 class _Box:
     def __init__(self, cord1:Cords, cord2:Cords):
@@ -38,6 +55,7 @@ class InvSlot(_UsableObject):
             self.box.cord2.y - (self.box.cord2.y - self.box.cord1.y) / 2
         )
         self.double = True
+        self.item:Item = None
 
     def __str__(self) -> str:
         return f"{self.box.cord1} - {self.box.cord2}"
@@ -53,9 +71,9 @@ class Interfaces:
     class Panel:
         def __init__(self) -> None:
             self.slots:List[List[_PanelBtn]] = []
-            self.__fill_inventory_info()
+            self.__fill_info()
         
-        def __fill_inventory_info(self):
+        def __fill_info(self):
             offset_x = 34
             offset_y = 34
             
@@ -73,9 +91,9 @@ class Interfaces:
             self.ui_btn = Cords(2355, 1420)
             self.check_open = Cords(662, 122)
             self.check_color = (235, 235, 235)
-            self.__fill_inventory_info()
+            self.__fill_info()
 
-        def __fill_inventory_info(self):
+        def __fill_info(self):
             offset_x = 38
             offset_y = 38
             x1 = 352
