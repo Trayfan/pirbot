@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import pyautogui
 import pyscreenshot as ImageGrab
+from data.enums import Location, ImageMode
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from data.cords import Cords
+    from data.cords import Cords, _Box
 
 
 def click(cords:Cords, double:bool=False):
@@ -18,3 +19,19 @@ def click(cords:Cords, double:bool=False):
 def get_cord_color(cords:Cords) -> (int, int, int):
     im=ImageGrab.grab(bbox=(cords.x,cords.y,cords.x+1,cords.y+1)).load()
     return im[0, 0]
+
+def get_image(box:_Box, file_name:str, mode:ImageMode=ImageMode.Binary, threshold=200):
+    im=ImageGrab.grab(bbox=(box.cord1.x, box.cord1.y, box.cord2.x, box.cord2.y))
+    if mode == ImageMode.Binary:
+        im=im.convert('L')
+        width, height = im.size
+        for x in range(width):
+            for y in range(height):
+                if im.getpixel((x, y)) < threshold:
+                    im.putpixel((x, y), 0)
+                else:
+                    im.putpixel((x, y), 255)
+    im.save(file_name)
+
+def write(text:str):
+    pyautogui.write(str(text))
