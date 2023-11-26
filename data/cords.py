@@ -1,7 +1,7 @@
 import difflib
 from typing import List
 from client_interactions import click, get_cord_color, get_image, write
-from data.enums import ItemType, Location, RecognitionMode
+from data.enums import ItemType, Location, RecognitionMode, ImageMode
 from data.recognition import get_text
 from time import sleep
 
@@ -17,22 +17,39 @@ class _UsableObject:
         open_count = 0
         match self.item.type_:
             case ItemType.Ticket:
-                pass
+                current_location = Interfaces.Minimap.location()
+                while current_location not in self.item.check_object.value:
+                    click(self.cords, self.double)
+                    sleep(1)
+                    current_location = Interfaces.Minimap.location()
+                print(f"Находимся в локации: {current_location.value}")
             case ItemType.Disapear:
                 color = self.item.check_object.get_color()
-                while color == self.item.check_object.item.color and open_count < 5:
+                while color == self.item.check_object.item.color and open_count < 30:
                     click(self.cords, self.double)
+                    # кликаем по безопасному месту в инвентаре
+                    click(Cords(622, 473))
                     color = self.item.check_object.get_color()
                     open_count += 1
+                print(f"Использован предмет: {self.item.name}")
             case ItemType.AnotherCell:
                 color = self.item.check_object.get_color()
-                while color != self.item.check_object.item.color and open_count < 5:
+                while color != self.item.check_object.item.color and open_count < 30:
                     click(self.cords, self.double)
+                    # кликаем по безопасному месту в инвентаре
+                    click(Cords(622, 473))
                     color = self.item.check_object.get_color()
                     open_count += 1
+                print(f"Использован предмет: {self.item.name}")
+            case ItemType.Buff:
+                color = get_cord_color(self.item.check_object[0])
+                while color != self.item.check_object[1]:
+                    click(self.cords, self.double)
+                    sleep(1)
+                    color = get_cord_color(self.item.check_object[0])
             case _:
                 click(self.cords, self.double)
-        if open_count >= 5:
+        if open_count >= 30:
             print("Не удалось использовать предмет!", self.item)
             exit()
 
@@ -46,19 +63,22 @@ class Cords:
 
     def __str__(self) -> str:
         return f"{self.x}, {self.y}"
+    
+    def __eq__(self, __value: object) -> bool:
+        return ((self.x, self.y) == (__value.x, __value.y))
 
 class _PanelBtn(_UsableObject):
     def __init__(self, cords:Cords):
         self.cords = cords
         self.double = False
 
-        self.item_:Item = None
+        self.item:Item = None
 
     def __str__(self) -> str:
         return f"{self.cords}"
 
 class Item:
-    def __init__(self, name:str, type_:str, color:(int, int, int), check_object):
+    def __init__(self, name:str, type_:str, check_object, color:(int, int, int)=None):
         self.name = name
         self.type_ = type_
         self.color = color
@@ -82,6 +102,23 @@ class InvSlot(_UsableObject):
         self.double = True
         self.item:Item = None
 
+    def get_treasure_cords(self):
+        file_name = "images/treasure_cords.png"
+        click(self.cords)
+        get_image(_Box(Cords(530, 290), Cords(530+56, 290+11)), file_name)
+        raw_text = get_text(file_name)
+        x = int(raw_text.split(",")[0])
+        y = int(raw_text.split(",")[1])
+        if x == 697:
+            x = 897
+        elif x == 642:
+            x = 842
+        elif x == 647:
+            x = 847
+        print(f"Получены координаты: {Cords(x, y)}")
+        return Cords(x, y)
+
+
     def __str__(self) -> str:
         return f"{self.box.cord1} - {self.box.cord2}"
 
@@ -91,6 +128,7 @@ class _Interface:
         while color != self.check_color:
             click(self.ui_btn)
             color = get_cord_color(self.check_open)
+        print(f"{self.__class__.__name__} открыт")
 
 class Button:
     def __init__(self, cords:Cords, check_cords:Cords=None, check_color:(int, int, int)=None, reverse:bool=False):
@@ -153,8 +191,7 @@ class Interfaces:
                 self.slots.append(inv_row)
 
     class Minimap:
-        @property
-        def location(self) -> Location:
+        def location() -> Location:
             file_name = "images/location.png"
             get_image(box=_Box(Cords(2408, 12), Cords(2408 + 130, 12 + 15)), file_name=file_name, threshold=180)
             raw_text = get_text(file_name, RecognitionMode.All)
@@ -166,6 +203,33 @@ class Interfaces:
                     loc_win = loc
                     loc_win_ratio = ratio
             return loc_win
+        
+        def get_char_cord():
+            file_name = "images/char_cords.png"
+            add_pixel = [Cords(31, 11), Cords(32, 9), Cords(31, 9)] # [Cords(32, 12), Cords(32, 9), Cords(31, 9)]
+            get_image(box=_Box(Cords(2440, 189), Cords(2440 + 70, 189 + 12)), file_name=file_name, threshold=150, add_pixel=add_pixel)
+            raw_text = get_text(file_name)
+            return raw_text
+            # print(raw_text)
+            # try:
+            #     x = raw_text.replace(".", ",").split(",")[0]
+            #     y = raw_text.replace(".", ",").split(",")[1]
+            #     return Cords(int(x), int(y))
+            # except:
+            #     return Cords(0, 0)
+
+
+        def wait_running():
+            print("Бежим к точке")
+            while 1:
+                cords1 = Interfaces.Minimap.get_char_cord()
+                sleep(1)
+                cords2 = Interfaces.Minimap.get_char_cord()
+                # print(cords1, cords2)
+                # if cords1 == cords2 == Cords(0, 0):
+                #     continue
+                if cords1 == cords2:
+                    return True
         
     class Radar(_Interface):
         def __init__(self) -> None:
@@ -183,6 +247,7 @@ class Interfaces:
             sleep(0.1)
 
         def go_to(self, cords:Cords):
+            print(f"Двигаемся к точке: {cords}")
             self.open()
             self.write_cords(cords)
             self.confirm.click_btn()
@@ -191,5 +256,6 @@ class Game:
     def __init__(self) -> None:
         self.inv = Interfaces.Inventory()
         self.panel = Interfaces.Panel()
-        self.minimap = Interfaces.Minimap()
+        self.minimap = Interfaces.Minimap
         self.radar = Interfaces.Radar()
+        print("Бот инициализирован")

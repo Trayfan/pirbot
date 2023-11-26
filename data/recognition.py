@@ -7,7 +7,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 def get_text(file_name:str, mode:RecognitionMode=RecognitionMode.Number) -> str:
     match mode:
         case RecognitionMode.Number:
-            config = f'--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789'
+            config = f'--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789,.'
         case RecognitionMode.All:
             config = None
     ocr_result = pytesseract.image_to_string(Image.open(file_name), config=config)
