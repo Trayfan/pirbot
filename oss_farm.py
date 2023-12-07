@@ -80,18 +80,18 @@ ticket_andes_forest_haven = game.panel.slots[1][11]
 invis = game.panel.slots[0][0]
 
 # Устанавливаем какой предмет лежит в ячейке
-treasure_map.item = Item("treasure_map", ItemType.Disapear, treasure_map, (180, 152, 95))
-oss.item = Item("oss", ItemType.AnotherCell, treasure_map, (211, 167, 59))
+treasure_map.item = Item("treasure_map", ItemType.Disapear, treasure_map, treasure_map.get_color())
+oss.item = Item("oss", ItemType.AnotherCell, treasure_map, oss.get_color())
 ticket_argent.item = Item("ticket_argent", ItemType.Ticket, Ticket.ArgentCity, ticket_argent.get_color())
-ticket_icespire_haven.item = Item("ticket_icespire_haven", ItemType.Ticket, Ticket.IcespireHaven, (139, 40, 218))
-ticket_abandon_mine.item = Item("ticket_abandon_mine", ItemType.Ticket, Ticket.AbandonMine1, (213, 101, 13))
-ticket_thundoria_castle.item = Item("ticket_thundoria_castle", ItemType.Ticket, Ticket.ThundoriaCastle, (10, 59, 80))
-ticket_lone_tower.item = Item("ticket_lone_tower", ItemType.Ticket, Ticket.LoneTower, (206, 236, 255))
-ticket_thundoria_harbor.item = Item("ticket_thundoria_harbor", ItemType.Ticket, Ticket.ThundoriaHarbor, (175, 194, 255))
-ticket_sacred_snow_mountain.item = Item("ticket_sacred_snow_mountain", ItemType.Ticket, Ticket.SacredSnowMountain, (213, 101, 13))
-ticket_oasis.item = Item("ticket_oasis", ItemType.Ticket, Ticket.OasisHaven, (189, 173, 137))
-ticket_barren_cavern.item = Item("ticket_barren_cavern", ItemType.Ticket, Ticket.BarrenCavern, (213, 101, 13))
-ticket_andes_forest_haven.item = Item("ticket_andes_forest_haven", ItemType.Ticket, Ticket.AndesForestHaven, (123, 193, 17))
+ticket_icespire_haven.item = Item("ticket_icespire_haven", ItemType.Ticket, Ticket.IcespireHaven, ticket_icespire_haven.get_color())
+ticket_abandon_mine.item = Item("ticket_abandon_mine", ItemType.Ticket, Ticket.AbandonMine1, ticket_abandon_mine.get_color())
+ticket_thundoria_castle.item = Item("ticket_thundoria_castle", ItemType.Ticket, Ticket.ThundoriaCastle, ticket_thundoria_castle.get_color())
+ticket_lone_tower.item = Item("ticket_lone_tower", ItemType.Ticket, Ticket.LoneTower, ticket_lone_tower.get_color())
+ticket_thundoria_harbor.item = Item("ticket_thundoria_harbor", ItemType.Ticket, Ticket.ThundoriaHarbor, ticket_thundoria_harbor.get_color())
+ticket_sacred_snow_mountain.item = Item("ticket_sacred_snow_mountain", ItemType.Ticket, Ticket.SacredSnowMountain, ticket_sacred_snow_mountain.get_color())
+ticket_oasis.item = Item("ticket_oasis", ItemType.Ticket, Ticket.OasisHaven, ticket_oasis.get_color())
+ticket_barren_cavern.item = Item("ticket_barren_cavern", ItemType.Ticket, Ticket.BarrenCavern, ticket_barren_cavern.get_color())
+ticket_andes_forest_haven.item = Item("ticket_andes_forest_haven", ItemType.Ticket, Ticket.AndesForestHaven, ticket_andes_forest_haven.get_color())
 invis.item = Item("Invisible", ItemType.Buff, (Cords(409, 1155), (2, 3, 0)), invis.get_color())
 
 
