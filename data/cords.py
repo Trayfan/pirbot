@@ -5,6 +5,10 @@ from data.enums import ItemType, Location, RecognitionMode, ImageMode
 from data.recognition import get_text
 from time import sleep
 
+def dead():
+    if get_cord_color(Cords(803, 609)) == (235, 235, 235):
+        return True
+    return False
 
 class _UsableObject:
     def use(self):
@@ -19,6 +23,9 @@ class _UsableObject:
             case ItemType.Ticket:
                 current_location = Interfaces.Minimap.location()
                 while current_location not in self.item.check_object.value:
+                    if dead():
+                        click(Cords(720, 670))
+                        click(Cords(2514, 1371))
                     click(self.cords, self.double)
                     sleep(1)
                     current_location = Interfaces.Minimap.location()
@@ -26,9 +33,12 @@ class _UsableObject:
             case ItemType.Disapear:
                 color = self.item.check_object.get_color()
                 while color == self.item.check_object.item.color and open_count < 30:
+                    if dead():
+                        click(Cords(720, 670))
+                        click(Cords(2514, 1371))
                     click(self.cords, self.double)
-                    # кликаем по безопасному месту в инвентаре
-                    click(Cords(622, 473))
+                    # # кликаем по безопасному месту в инвентаре
+                    # click(Cords(622, 473))
                     color = self.item.check_object.get_color()
                     open_count += 1
                 print(f"Использован предмет: {self.item.name}")
@@ -109,12 +119,18 @@ class InvSlot(_UsableObject):
         raw_text = get_text(file_name)
         x = int(raw_text.split(",")[0])
         y = int(raw_text.split(",")[1])
-        if x == 697:
-            x = 897
-        elif x == 642:
-            x = 842
-        elif x == 647:
-            x = 847
+        # if x == 697:
+        #     x = 897
+        # elif x == 642:
+        #     x = 842
+        # elif x == 647:
+        #     x = 847
+        if str(x)[0] == "6":
+            x += 200
+        if len(str(x)) == 2:
+            x += 200
+        if x == 971:
+            x = 921
         print(f"Получены координаты: {Cords(x, y)}")
         return Cords(x, y)
 

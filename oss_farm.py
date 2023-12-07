@@ -1,6 +1,6 @@
 from data.cords import Game, Item, Cords
 from data.enums import ItemType, Location, Ticket
-from client_interactions import get_cord_color, press_key
+from client_interactions import get_cord_color, press_key, click
 
 
 def get_location_by_cords(cords:Cords):
@@ -19,7 +19,6 @@ def get_location_by_cords(cords:Cords):
     for loc in possible_locations:
         x_dif = abs(cords.x - loc[1].x)
         y_dif = abs(cords.y - loc[1].y)
-        # print(loc[0], "diff: ", x_dif, y_dif, "result: ", result[1])
         if x_dif + y_dif < result[1]:
             result = (loc[0], x_dif + y_dif)
     print(f"Локация копания сокровищ: {result[0].value}")
@@ -31,13 +30,12 @@ def tp_to_location(location:Location):
     for column in game.panel.slots[1]:
         if not column.item:
             continue
-        # print(column.item, type(column.item.check_object), type(location), column.item.check_object.name, location.name)
         if location in column.item.check_object.value:
             column.use()
             # invis.use()
             match location:
                 case Location.BelmontPlains:
-                    game.radar.go_to(Cords(1621, 2696))
+                    click(Cords(509, 693))
                     game.minimap.wait_running()
                 case Location.ThundoriaCastle:
                     game.radar.go_to(Cords(753, 1638))
@@ -60,7 +58,10 @@ def safe_point(location:Location):
             cords = Cords(2728, 614)
     return cords
     
-
+def dead():
+    if get_cord_color(Cords(803, 609)) == (235, 235, 235):
+        return True
+    return False
 
 game = Game()
 # Устанавливаем за что отвечают ячейки
@@ -103,13 +104,9 @@ while 1:
     game.inv.open()
     game.radar.go_to(cords)
     game.minimap.wait_running()
-    press_key("insert")
     treasure_map.use()
+    click(Cords(2514, 1371))
+    if dead():
+        click(Cords(720, 670))
+        click(Cords(2514, 1371))
     ticket_argent.use()
-    # safe_cords = safe_point(location)
-    # if safe_cords:
-    #     game.radar.go_to(safe_cords)
-    # input()
-
-# print(get_cord_color(invis.item.check_object[0]))
-# invis.use()
